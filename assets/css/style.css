@@ -1,0 +1,108 @@
+html,
+body {
+  box-sizing: border-box;
+  font-size: 20px;
+  background: darkolivegreen;
+}
+.pageHeader {
+  height: 80px;
+  width: 100%;
+  background: darkred;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#gameTitle {
+  font-size: 60px;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+}
+/* .greeting {
+  display: flex;
+  font-size: 20px;
+  height: auto;
+  width: auto;
+  margin-top: 40px;
+} */
+.messageBoard {
+  display: flex;
+  font-size: 20px;
+  height: auto;
+  width: auto;
+  margin-top: 10px;
+}
+.gameLocale {
+  display: flex;
+  width: 80%;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  margin-top: 30px;
+}
+.player {
+  display: flex;
+  background: gold;
+  width: 20vw;
+  height: 20vw;
+
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 20px;
+}
+.resultBox {
+  display: flex;
+  background: gold;
+  width: 20vw;
+  height: 20vw;
+  padding: 10px;
+  font-size: 60px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+#playerNameInput {
+  width: 15vw;
+  height: 2vw;
+  font-size: 20px;
+  margin-right: 10px;
+}
+#nameInputLabel {
+  margin-right: 10px;
+}
+#nameSubmit {
+  height: 20px;
+}
+.rps {
+  display: flex;
+}
+.pName {
+  display: flex;
+  font-size: 30px;
+  height: auto;
+  width: auto;
+}
+.pChoice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 60px;
+  height: auto;
+  width: auto;
+}
+.pStats {
+  display: flex;
+  font-size: 30px;
+  height: auto;
+  width: auto;
+}
