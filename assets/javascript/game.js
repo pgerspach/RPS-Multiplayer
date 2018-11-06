@@ -1,6 +1,6 @@
 $(document).ready(function() {
   var config = {
-    apiKey: "AIzaSyBvUs9nIRhm-wmv6Pqwd6kerxL204yA0vA",
+    //apiKey: "AIzaSyBvUs9nIRhm-wmv6Pqwd6kerxL204yA0vA",
     authDomain: "gfb1-16566.firebaseapp.com",
     databaseURL: "https://gfb1-16566.firebaseio.com",
     projectId: "gfb1-16566",
