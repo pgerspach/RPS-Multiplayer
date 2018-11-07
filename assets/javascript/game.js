@@ -7,13 +7,9 @@ $(document).ready(function() {
     storageBucket: "gfb1-16566.appspot.com",
     messagingSenderId: "820389293762"
   };
-
-  var playerNumber;
-
+  var localPlayerNumber;
   firebase.initializeApp(config);
   var database = firebase.database();
-  var connectionsRef = database.ref("/connections");
-  var connectedRef = database.ref(".info/connected");
 
   function promptName() {
     var nameLabel = $("<label>");
@@ -50,40 +46,31 @@ $(document).ready(function() {
         if (snapshot.child("players").numChildren() < 2) {
           if (!snapshot.child("players/2").exists()) {
             var playerNumber = 2;
-
-            database.ref("/players/2").set({
-              name: playerName,
-              number: playerNumber
-            });
-            var con = database.ref(`/players/${playerNumber}`);
-            con.onDisconnect().remove();
-            displayChoices(playerNumber);
+            newPlayer(playerNumber, playerName);
           } else {
             var playerNumber = 1;
-
-            database.ref("/players/1").set({
-              name: playerName,
-              number: playerNumber
-            });
-            var con = database.ref(`/players/${playerNumber}`);
-            con.onDisconnect().remove();
-            displayChoices(playerNumber);
+            newPlayer(playerNumber, playerName);
           }
+          localPlayerNumber = playerNumber;
         }
       } else {
         var playerNumber = 1;
-
-        database.ref("/players/1").set({
-          name: playerName,
-          number: playerNumber
-        });
-        var con = database.ref(`/players/${playerNumber}`);
-        con.onDisconnect().remove();
-        displayChoices(playerNumber);
+        localPlayerNumber = playerNumber;
+        newPlayer(playerNumber, playerName);
       }
     });
     $(".messageBoard").html(`Welcome ${playerName}`);
   });
+
+  function newPlayer(playerNumber, playerName) {
+    database.ref(`/players/${playerNumber}`).set({
+      name: playerName,
+      number: playerNumber
+    });
+    var con = database.ref(`/players/${playerNumber}`);
+    con.onDisconnect().remove();
+    displayChoices(playerNumber);
+  }
 
   function displayChoices(pNumber) {
     database
@@ -93,21 +80,27 @@ $(document).ready(function() {
         var pName = snapshot.val().name;
         var rock = $("<div>");
         rock.attr("class", "rps");
+        rock.attr("value", "rock");
         rock.html("ROCK");
 
         var paper = $("<div>");
         paper.attr("class", "rps");
+        paper.attr("value", "paper");
         paper.html("PAPER");
 
         var scissors = $("<div>");
         scissors.attr("class", "rps");
+        scissors.attr("value", "scissors");
         scissors.html("SCISSORS");
-        $(`.playerChoice-${pNumber}`).html("");
 
+        $(`.playerChoice-${pNumber}`).html("");
         $(`.playerName-${pNumber}`).html(pName);
-        $(`.playerChoice-${pNumber}`).append(rock);
-        $(`.playerChoice-${pNumber}`).append(paper);
-        $(`.playerChoice-${pNumber}`).append(scissors);
+
+        if (pNumber == localPlayerNumber) {
+          $(`.playerChoice-${pNumber}`).append(rock);
+          $(`.playerChoice-${pNumber}`).append(paper);
+          $(`.playerChoice-${pNumber}`).append(scissors);
+        }
       });
   }
 
@@ -121,4 +114,117 @@ $(document).ready(function() {
       displayChoices(child.val().number);
     });
   });
+
+  database.ref("/choices").on("value", function(snapshot) {
+    $(`.pTurn`).html("");
+
+    snapshot.forEach(child => {
+      if (child.val().number == localPlayerNumber) {
+        $(`.playerChoice-${localPlayerNumber}`).html("");
+        $(`.playerChoice-${localPlayerNumber}`).attr("style", "display:none");
+
+        $(`.PlayerTurn-${localPlayerNumber}`).html(
+          child.val().choice.toUpperCase()
+        );
+      }
+    });
+
+    if (snapshot.numChildren() == 2) {
+      snapshot.forEach(child => {
+        $(`.playerChoice-${child.val().number}`).html("");
+        $(`.playerChoice-${child.val().number}`).attr("style", "display:none");
+
+        $(`.PlayerTurn-${child.val().number}`).html(
+          child.val().choice.toUpperCase()
+        );
+      });
+      var winner = compareChoices(snapshot);
+      if (winner != 0) {
+        database
+          .ref(`/players/${winner}`)
+          .once("value")
+          .then(function(snap) {
+
+            var display = snap.val().name;
+            $(".result").html(display + " WINS!");
+            setTimeout(function(){
+              $(".result").html("");
+              snapshot.forEach(child => {
+                $(`.playerChoice-${child.val().number}`).attr(
+                  "style",
+                  "display:flex"
+                );
+                $(`.playerTurn-${child.val().number}`).html("");
+                displayChoices(child.val().number);
+              });
+              database.ref(`/choices/${localPlayerNumber}`).remove();
+            }, 2000);
+
+            
+          });
+      }
+    }
+  });
+
+  $(".pChoice").on("click", function(event) {
+    var choice = $(event.target).attr("value");
+    var choiceRef = database.ref(`/choices/${localPlayerNumber}`);
+    choiceRef.set({
+      choice: choice,
+      number: localPlayerNumber
+    });
+    choiceRef.onDisconnect().remove();
+  });
+
+  function compareChoices(snapshot) {
+    var choice1;
+    var choice2;
+    var winner;
+    snapshot.forEach(child => {
+      if (child.val().number == 1) {
+        choice1 = child.val().choice;
+      } else {
+        choice2 = child.val().choice;
+      }
+    });
+    switch (choice1) {
+      case "rock":
+        switch (choice2) {
+          case "scissors":
+            winner = 1;
+            break;
+          case "paper":
+            winner = 2;
+            break;
+          default:
+            winner = 0;
+        }
+        break;
+      case "scissors":
+        switch (choice2) {
+          case "paper":
+            winner = 1;
+            break;
+          case "rock":
+            winner = 2;
+            break;
+          default:
+            winner = 0;
+        }
+        break;
+      case "paper":
+        switch (choice2) {
+          case "rock":
+            winner = 1;
+            break;
+          case "scissors":
+            winner = 2;
+            break;
+          default:
+            winner = 0;
+        }
+        break;
+    }
+    return winner;
+  }
 });

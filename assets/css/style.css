@@ -2,13 +2,13 @@ html,
 body {
   box-sizing: border-box;
   font-size: 20px;
-  background: darkolivegreen;
+  background: darkblue;
 }
 .pageHeader {
   height: 80px;
   width: 100%;
-  background: darkred;
-  color: white;
+  background: lightskyblue;
+  color: darkblue;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,7 +48,7 @@ body {
 }
 .player {
   display: flex;
-  background: gold;
+  background: lightcyan;
   width: 20vw;
   height: 20vw;
 
@@ -57,10 +57,11 @@ body {
   align-items: center;
   padding: 10px;
   border-radius: 20px;
+  color:darkblue;
 }
 .resultBox {
   display: flex;
-  background: gold;
+  background: lightcyan;
   width: 20vw;
   height: 20vw;
   padding: 10px;
@@ -68,6 +69,14 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
+  color:darkblue;
+
+}
+.result{
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
 }
 #playerNameInput {
   width: 15vw;
@@ -100,6 +109,21 @@ body {
   height: auto;
   width: auto;
 }
+.pTurn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 60px;
+  height: auto;
+  width: auto;
+}
+.rps:hover{
+  cursor: pointer;
+  color:lightskyblue;
+}
+
 .pStats {
   display: flex;
   font-size: 30px;
