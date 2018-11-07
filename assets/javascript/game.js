@@ -147,25 +147,36 @@ $(document).ready(function() {
 
             var display = snap.val().name;
             $(".result").html(display + " WINS!");
-            setTimeout(function(){
-              $(".result").html("");
-              snapshot.forEach(child => {
-                $(`.playerChoice-${child.val().number}`).attr(
-                  "style",
-                  "display:flex"
-                );
-                $(`.playerTurn-${child.val().number}`).html("");
-                displayChoices(child.val().number);
-              });
-              database.ref(`/choices/${localPlayerNumber}`).remove();
-            }, 2000);
-
-            
+            reset(snapshot);
           });
       }
+      else{
+        database
+          .ref(`/players/${winner}`)
+          .once("value")
+          .then(function(snap) {
+
+            $(".result").html("TIE!");
+            reset(snapshot);
+          });
+      }
+      
     }
   });
-
+  function reset(snapshot){
+    setTimeout(function(){
+      $(".result").html("");
+      snapshot.forEach(child => {
+        $(`.playerChoice-${child.val().number}`).attr(
+          "style",
+          "display:flex"
+        );
+        $(`.playerTurn-${child.val().number}`).html("");
+        displayChoices(child.val().number);
+      });
+      database.ref(`/choices/${localPlayerNumber}`).remove();
+    }, 2000);
+  }
   $(".pChoice").on("click", function(event) {
     var choice = $(event.target).attr("value");
     var choiceRef = database.ref(`/choices/${localPlayerNumber}`);
