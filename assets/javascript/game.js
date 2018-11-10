@@ -151,6 +151,7 @@ $(document).ready(function() {
         $(".messageBoard2").html("");
 
       }, 1500);
+      numPlay--;
     }
     else{
       numPlay++;
