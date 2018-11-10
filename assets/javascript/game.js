@@ -152,6 +152,14 @@ $(document).ready(function() {
 
       }, 1500);
       numPlay--;
+      database.ref(`/results/${localPlayerNumber}`).child('wins').transaction(function(wins) {
+        wins=0;
+        return wins
+      });
+      database.ref(`/results/${localPlayerNumber}`).child('wins').transaction(function(losses) {
+        losses=0;
+        return losses
+      });
     }
     else{
       numPlay++;
