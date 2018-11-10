@@ -1,4 +1,7 @@
 $(document).ready(function() {
+  var wins = 0;
+  var losses = 0;
+  var numPlay = 0;
   var config = {
     //apiKey: "AIzaSyBvUs9nIRhm-wmv6Pqwd6kerxL204yA0vA",
     authDomain: "gfb1-16566.firebaseapp.com",
@@ -10,6 +13,10 @@ $(document).ready(function() {
   var localPlayerNumber;
   firebase.initializeApp(config);
   var database = firebase.database();
+  const messaging = firebase.messaging();
+  messaging.usePublicVapidKey("BCsUf25c3naDkD42FM2osMsSO3ccWhq3exohGCBTBovgjfS7JDI4fL5BHJ1_1INkVY370-Ty3QRLUTv2Ufkhn-M");
+
+  
 
   function promptName() {
     var nameLabel = $("<label>");
@@ -67,7 +74,14 @@ $(document).ready(function() {
       name: playerName,
       number: playerNumber
     });
+    database.ref(`/results/${playerNumber}`).set({
+      wins: wins,
+      losses: losses,
+      number: playerNumber
+    });
     var con = database.ref(`/players/${playerNumber}`);
+    var con2 = database.ref(`/results/${playerNumber}`);
+    con2.onDisconnect().remove();
     con.onDisconnect().remove();
     displayChoices(playerNumber);
   }
@@ -95,6 +109,18 @@ $(document).ready(function() {
 
         $(`.playerChoice-${pNumber}`).html("");
         $(`.playerName-${pNumber}`).html(pName);
+        var wins=0;
+        var losses=0;
+        database
+      .ref(`/results/${pNumber}`)
+      .once("value")
+      .then(function(snap) {
+        wins = snap.val().wins;
+        console.log("WINS: "+snap.val().wins);
+        losses=snap.val().losses;
+        $(`.playerStats-${pNumber}`).html(`Wins: ${wins} Losses: ${losses}`);
+
+      })
 
         if (pNumber == localPlayerNumber) {
           $(`.playerChoice-${pNumber}`).append(rock);
@@ -105,14 +131,24 @@ $(document).ready(function() {
   }
 
   database.ref("/players").on("value", function(snapshot) {
-    console.log("SOMEONE BOUNCED");
     $(`.pName`).html("");
     $(`.pChoice`).html("");
     $(`.pStats`).html("");
+    // if(snapshot.numChildren()<numPlay)
+    // {
+    //   $(".messageBoard2").append("Your opponent has disconnected");
+    //   setTimeout(function(){
+    //     $(".messageBoard2").html("");
 
+    //   }, 1500);
+    // }
+    // else{
+    //   numPlay++;
+    // }
     snapshot.forEach(child => {
       displayChoices(child.val().number);
     });
+    
   });
 
   database.ref("/choices").on("value", function(snapshot) {
@@ -147,6 +183,18 @@ $(document).ready(function() {
 
             var display = snap.val().name;
             $(".result").html(display + " WINS!");
+            if(winner==localPlayerNumber){ ///// INCREMENT WINS/LOSSES
+            database.ref(`/results/${localPlayerNumber}`).child('wins').transaction(function(wins) {
+              console.log("WIN HERE");
+              return (wins || 0) + 1;
+            });
+          }
+          else{
+            database.ref(`/results/${localPlayerNumber}`).child('losses').transaction(function(losses) {
+              
+              return (losses || 0) + 1;
+            });
+          }
             reset(snapshot);
           });
       }
@@ -154,7 +202,7 @@ $(document).ready(function() {
         database
           .ref(`/players/${winner}`)
           .once("value")
-          .then(function(snap) {
+          .then(function() {
 
             $(".result").html("TIE!");
             reset(snapshot);
@@ -163,7 +211,9 @@ $(document).ready(function() {
       
     }
   });
-  function reset(snapshot){
+
+  function reset(snapshot){ //// RESET GAME
+    database.ref(`/choices/${localPlayerNumber}`).remove();
     setTimeout(function(){
       $(".result").html("");
       snapshot.forEach(child => {
@@ -174,9 +224,9 @@ $(document).ready(function() {
         $(`.playerTurn-${child.val().number}`).html("");
         displayChoices(child.val().number);
       });
-      database.ref(`/choices/${localPlayerNumber}`).remove();
     }, 2000);
   }
+
   $(".pChoice").on("click", function(event) {
     var choice = $(event.target).attr("value");
     var choiceRef = database.ref(`/choices/${localPlayerNumber}`);
