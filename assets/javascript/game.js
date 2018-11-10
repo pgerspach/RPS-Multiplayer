@@ -2,6 +2,7 @@ $(document).ready(function() {
   var wins = 0;
   var losses = 0;
   var numPlay = 0;
+  var oppName;
   var config = {
     //apiKey: "AIzaSyBvUs9nIRhm-wmv6Pqwd6kerxL204yA0vA",
     authDomain: "gfb1-16566.firebaseapp.com",
@@ -127,6 +128,15 @@ $(document).ready(function() {
           $(`.playerChoice-${pNumber}`).append(paper);
           $(`.playerChoice-${pNumber}`).append(scissors);
         }
+        else{
+          database
+          .ref(`/players/${pNumber}`)
+      .once("value")
+      .then(function(snapshot) {
+        oppName = snapshot.val().name;
+
+      })
+        }
       });
   }
 
@@ -134,17 +144,17 @@ $(document).ready(function() {
     $(`.pName`).html("");
     $(`.pChoice`).html("");
     $(`.pStats`).html("");
-    // if(snapshot.numChildren()<numPlay)
-    // {
-    //   $(".messageBoard2").append("Your opponent has disconnected");
-    //   setTimeout(function(){
-    //     $(".messageBoard2").html("");
+    if(snapshot.numChildren()<numPlay)
+    {
+      $(".messageBoard2").append(`${oppName} has disconnected`);
+      setTimeout(function(){
+        $(".messageBoard2").html("");
 
-    //   }, 1500);
-    // }
-    // else{
-    //   numPlay++;
-    // }
+      }, 1500);
+    }
+    else{
+      numPlay++;
+    }
     snapshot.forEach(child => {
       displayChoices(child.val().number);
     });
