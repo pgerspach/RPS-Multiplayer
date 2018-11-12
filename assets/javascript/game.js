@@ -91,27 +91,29 @@ $(document).ready(function() {
       $("#messageInput").val("");
       var messageRef = database.ref("messages");
       sendM = true;
-      messageRef.push({message:message}).onDisconnect().remove();
+      messageRef.push({message:message});
+      messageRef.onDisconnect().remove();
+    });
+    database.ref(`messages`).on("child_added", function(snapshot) { //Display messages!
+      var sentMessage = snapshot.child("message").val();
+      console.log("snapshot child: " +snapshot.child("message").val());
+      var whichPlayer = sentMessage.slice(0, 1);
+      //var whichPlayer = 0;
+      var playerMessage = $("<div>");
+      playerMessage.text(sentMessage.slice(1));
+      playerMessage.attr("class", "sentMessage");
+      if (whichPlayer == localPlayerNumber) {
+        playerMessage.attr("id", "p-local");
+      } else {
+        playerMessage.attr("id", "p-opp");
+      }
+      $("#messageHistory").append(playerMessage);
     });
   });
 
  
 
-  database.ref(`messages`).on("child_added", function(snapshot) { //Display messages!
-    var sentMessage = snapshot.child("message").val();
-    console.log("snapshot child: " +snapshot.child("message").val());
-    var whichPlayer = sentMessage.slice(0, 1);
-    //var whichPlayer = 0;
-    var playerMessage = $("<div>");
-    playerMessage.text(sentMessage.slice(1));
-    playerMessage.attr("class", "sentMessage");
-    if (whichPlayer == localPlayerNumber) {
-      playerMessage.attr("id", "p-local");
-    } else {
-      playerMessage.attr("id", "p-opp");
-    }
-    $("#messageHistory").append(playerMessage);
-  });
+  
 
   function newPlayer(playerNumber, playerName) {
     database.ref(`/players/${playerNumber}`).set({
