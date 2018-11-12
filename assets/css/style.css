@@ -130,3 +130,34 @@ body {
   height: auto;
   width: auto;
 }
+
+#messageHistory{
+  width: 40vw;
+  height: 15vw;
+  background: white;
+  margin-top: 20px;
+  border: 1px solid darkblue;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+.chatBox{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#p-local{
+  clear:both;
+  width:100%;
+  text-align: right;
+  color: blue;
+
+}
+#p-opp{
+  display: flex;
+  clear:both;
+  align-self:left;
+  color: purple;
+
+}
