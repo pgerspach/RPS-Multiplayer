@@ -142,17 +142,17 @@ $(document).ready(function() {
         var rock = $("<div>");
         rock.attr("class", "rps");
         rock.attr("value", "rock"); /// Display ROCK
-        rock.html("ROCK");
+        rock.html('<i class="fa fa-hand-rock" aria-hidden="true"></i>&nbsp ROCK');
 
         var paper = $("<div>");
         paper.attr("class", "rps");
         paper.attr("value", "paper"); /// Display PAPAER
-        paper.html("PAPER");
+        paper.html('<i class="fa fa-hand-paper" aria-hidden="true"></i>&nbsp PAPER');
 
         var scissors = $("<div>");
         scissors.attr("class", "rps");
         scissors.attr("value", "scissors"); /// Display SCISSORS
-        scissors.html("SCISSORS");
+        scissors.html('<i class="fa fa-hand-scissors" aria-hidden="true"></i> &nbsp SCISSORS');
 
         $(`.playerChoice-${pNumber}`).html("");
         $(`.playerName-${pNumber}`).html(pName);
